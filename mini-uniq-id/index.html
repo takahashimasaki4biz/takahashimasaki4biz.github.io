@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>ユニークID生成(8桁)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <span id="currentTime" style="float: right;"></span>
+    <h1><span id="generatedId" style="text-align: center;"></span></h1>
+    <script>
+        function update() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('currentTime').textContent = timeString;
+
+            const uuid = crypto.randomUUID(); // '4f24d385-a458-447d-a2ff-1eb972e4eeaf'
+            const firstFour = uuid.substring(0, 4);
+            const lastFour = uuid.substring(uuid.length - 4);
+            document.getElementById('generatedId').textContent = `${firstFour}-${lastFour}`;
+        }
+        update();
+    </script>
+    <button onclick="update()">Update</button>
+    <p>何度でもUpdateしてOKです</p>
+</body>
+
+</html>
