@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>画像トリミング（JPEG出力）</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+
+        #preview {
+            max-width: 100%;
+            max-height: 500px;
+            display: none;
+        }
+
+        .controls {
+            margin-top: 10px;
+        }
+
+        .controls>* {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>画像トリミングツール（JPEG出力）</h1>
+
+    <!-- 画像アップロード -->
+    <input type="file" id="inputImage" accept="image/*" />
+
+    <!-- トリミングプレビュー -->
+    <div>
+        <img id="preview" alt="プレビュー画像" />
+    </div>
+
+    <!-- 操作ボタン -->
+    <div class="controls">
+        <button id="downloadBtn" disabled>トリミング画像をダウンロード（JPG）</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script>
+        const inputImage = document.getElementById('inputImage');
+        const preview = document.getElementById('preview');
+        const downloadBtn = document.getElementById('downloadBtn');
+        let cropper;
+
+        // 画像選択時
+        inputImage.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+
+            if (cropper) {
+                cropper.destroy();
+            }
+
+            preview.src = url;
+            preview.style.display = 'block';
+
+            cropper = new Cropper(preview, {
+                aspectRatio: 1.228,  // 幅÷高さ＝1.228
+                viewMode: 1,
+                autoCropArea: 0.8,
+                movable: true,
+                zoomable: true,
+                background: false,
+                responsive: true,
+            });
+
+            downloadBtn.disabled = false;
+        });
+
+        // ダウンロード（JPEG）
+        downloadBtn.addEventListener('click', () => {
+            if (!cropper) return;
+
+            const canvas = cropper.getCroppedCanvas({
+                // 必要に応じて出力サイズを指定可能
+                // width: 1200,
+                // height: 1200 / 1.228,
+            });
+
+            // quality を 0.8（80%）などで指定できます
+            canvas.toBlob((blob) => {
+                const link = document.createElement('a');
+                link.download = 'cropped.jpg';
+                link.href = URL.createObjectURL(blob);
+                link.click();
+                URL.revokeObjectURL(link.href);
+            }, 'image/jpeg', 0.92);
+        });
+    </script>
+</body>
+
+</html>
